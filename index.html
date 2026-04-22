@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>India Data Center Landscape</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--cyan:#06B6D4;--blue:#1E3A8A;--orange:#F97316;--slate:#0F172A;--green:#10B981}
+body{font-family:'DM Sans',sans-serif;background:#F8FAFC;color:#0F172A;line-height:1.6}
+.display-font{font-family:'DM Serif Display',serif}
+.section-label{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:8px}
+.material-card{background:#fff;border-radius:16px;box-shadow:0 4px 24px -4px rgba(15,23,42,.08),0 1px 4px -1px rgba(15,23,42,.04);border:1px solid #E2E8F0;transition:all .3s ease}
+.material-card:hover{box-shadow:0 20px 40px -8px rgba(15,23,42,.15);transform:translateY(-2px)}
+.accent-cyan{color:var(--cyan)}
+.accent-blue{color:var(--blue)}
+.accent-orange{color:var(--orange)}
+.bg-accent-blue{background:var(--blue)}
+.nav-link{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#64748B;transition:color .2s}
+.nav-link:hover{color:var(--cyan)}
+.kpi-card{position:relative;overflow:hidden}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi-card.cyan::before{background:var(--cyan)}
+.kpi-card.orange::before{background:var(--orange)}
+.kpi-card.blue::before{background:var(--blue)}
+.kpi-card.green::before{background:var(--green)}
+.chart-container{position:relative;width:100%;max-width:700px;margin:auto;height:360px}
+.rating-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:2px}
+.rating-5{background:#10B981}
+.rating-4{background:#06B6D4}
+.rating-3{background:#F59E0B}
+.rating-2{background:#F97316}
+.rating-1{background:#EF4444}
+.flow-line{height:5px;width:100%;background:linear-gradient(90deg,#0ea5e9,#22c55e);border-radius:6px;position:relative;overflow:hidden}
+.flow-line::after{content:'';position:absolute;width:40px;height:5px;background:rgba(255,255,255,.8);animation:flowMove 2s linear infinite}
+@keyframes flowMove{0%{left:-40px}100%{left:100%}}
+.incentive-row:hover{background:#EFF6FF}
+.campus-node{border-left:3px solid var(--cyan);padding:12px 16px;background:linear-gradient(90deg,rgba(6,182,212,.06),transparent);border-radius:0 8px 8px 0;margin-bottom:10px}
+.risk-card{border-left:4px solid #EF4444;padding:16px;background:#FFF5F5;border-radius:0 8px 8px 0;margin-bottom:12px}
+.risk-card.orange{border-left-color:#F97316;background:#FFF7ED}
+.insight-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:9999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin:4px 4px 4px 0}
+.tree-node{padding-left:2rem;border-left:2px solid #3b82f6;padding-bottom:1.5rem;position:relative}
+.tree-node::before{content:'';position:absolute;left:-5px;top:0;width:10px;height:10px;background:#38bdf8;border-radius:50%;box-shadow:0 0 8px #38bdf8}
+.tree-node:last-child{border-left-color:transparent}
+.pulse-dot{width:10px;height:10px;background:#0ea5e9;border-radius:50%;position:relative;flex-shrink:0}
+.pulse-dot::after{content:'';position:absolute;top:-4px;left:-4px;right:-4px;bottom:-4px;border-radius:50%;border:2px solid #0ea5e9;animation:ping 2s cubic-bezier(0,0,.2,1) infinite}
+@keyframes ping{75%,100%{transform:scale(2);opacity:0}}
+.geo-node{display:flex;align-items:center;gap:12px;background:rgba(30,41,59,.7);border:1px solid rgba(56,189,248,.3);padding:12px;border-radius:10px;backdrop-filter:blur(4px);margin-bottom:12px}
+th{background:#1e293b;color:#fff;padding:10px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;text-align:left;white-space:nowrap}
+td{padding:9px 14px;border-bottom:1px solid #f1f5f9;font-size:12.5px;vertical-align:top}
+tr:hover td{background:#f8fafc}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;margin:1px}
+.tag-op{background:#D1FAE5;color:#065F46}
+.tag-uc{background:#FEF3C7;color:#92400E}
+.tag-pl{background:#DBEAFE;color:#1E40AF}
+.tag-em{background:#F3E8FF;color:#6B21A8}
+a.ref-link{color:var(--cyan);font-size:11px;text-decoration:none}
+a.ref-link:hover{text-decoration:underline}
+.star{color:#F59E0B;font-size:14px}
+</style>
+</head>
+<body class="antialiased">
+
+<!-- NAV -->
+<nav class="fixed top-0 w-full bg-white/95 backdrop-blur-md shadow-sm z-50 border-b border-slate-200">
+<div class="max-w-7xl mx-auto px-4 flex justify-between h-14 items-center">
+  <div class="flex items-center gap-3">
+    <div class="w-7 h-7 bg-blue-800 rounded flex items-center justify-center text-white font-black text-base">DC</div>
+    <span class="text-xs font-black text-slate-800 uppercase tracking-tight hidden sm:block">India DC & Energy Strategy Report</span>
+  </div>
+  <div class="hidden lg:flex items-center space-x-5 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+    <a href="#landscape" class="nav-link">DC Landscape</a>
+    <a href="#statecomp" class="nav-link">State Comparison</a>
+    <a href="#google" class="nav-link">Google DL Strategy</a>
+    <a href="#financial" class="nav-link">Economics</a>
+    <a href="#risks" class="nav-link">Risk Analysis</a>
+    <a href="#author" class="nav-link">Author</a>
+  </div>
+  <a href="https://www.linkedin.com/in/yash-pal-859145129" target="_blank" class="bg-[#0077b5] hover:bg-[#005582] text-white px-4 py-1.5 rounded text-[10px] font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5">
+    <span class="font-black text-sm leading-none">in</span>Connect
+  </a>
+</div>
+</nav>
+
+<!-- HERO -->
+<header class="pt-24 pb-16 bg-slate-900 text-white relative overflow-hidden">
+  <div class="absolute inset-0 opacity-10" style="background-image:radial-gradient(rgba(56,189,248,.4) 1px,transparent 1px);background-size:24px 24px"></div>
+  <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-900/40 to-transparent"></div>
+  <div class="max-w-7xl mx-auto px-4 relative z-10">
+    <span class="section-label">Strategic Advisory Note · April 2026</span>
+    <h1 class="display-font text-4xl md:text-5xl font-black mb-4 leading-tight">India Data Center Landscape<br><span class="text-blue-400"></span></h1>
+    <p class="text-slate-300 max-w-5xl text-base font-light leading-relaxed mb-8 mx-auto">
+    An integrated view mapping India’s data center geography state-by-state, and analyzing why hyperscalers cluster in coastal states while solar IPPs anchor in Rajasthan and Gujarat.
+</p>
+    <div class="flex flex-wrap gap-2">
+      <span class="insight-pill" style="background:rgba(6,182,212,.15);color:#38bdf8">⚡ Energy Markets</span>
+      <span class="insight-pill" style="background:rgba(99,102,241,.15);color:#818cf8">📊 Regulatory Strategy</span>
+      <span class="insight-pill" style="background:rgba(16,185,129,.15);color:#34d399">🌱 Clean Energy</span>
+      <span class="insight-pill" style="background:rgba(249,115,22,.15);color:#fb923c">🏗 Infra Finance</span>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 py-12 space-y-20">
+
+
+
+
+<!-- ============================================================ -->
+<!-- SECTION 1: KPI OVERVIEW -->
+<!-- ============================================================ -->
+<section class="scroll-mt-20">
+  <span class="section-label">India DC Market — Macro View</span>
+  <h2 class="display-font text-3xl accent-blue mb-8">Scale of the Opportunity</h2>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="material-card p-6 kpi-card cyan">
+      <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Operational Capacity</div>
+      <div class="text-3xl font-black text-slate-900 mb-1">~1.5–1.7 GW</div>
+      <p class="text-xs text-slate-500">Total installed as of early 2026 (Cushman & Wakefield H1 2025)</p>
+    </div>
+    <div class="material-card p-6 kpi-card orange">
+      <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Pipeline (Under Const. + Planned)</div>
+      <div class="text-3xl font-black text-slate-900 mb-1">~2.9 GW</div>
+      <p class="text-xs text-slate-500">Upcoming supply (Cushman & Wakefield, Colliers 2025)</p>
+    </div>
+    <div class="material-card p-6 kpi-card blue">
+      <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">2030 Target Capacity</div>
+      <div class="text-3xl font-black text-slate-900 mb-1">8–14 GW</div>
+      <p class="text-xs text-slate-500">Industry consensus; $150–200B investment projected (Colliers, CBRE)</p>
+    </div>
+    <div class="material-card p-6 kpi-card green">
+      <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Investment Attracted (2020–2025)</div>
+      <div class="text-3xl font-black text-slate-900 mb-1">$95B+</div>
+      <p class="text-xs text-slate-500">Committed investment (CBRE 2025; $30B in 2025 alone)</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- SECTION 2: India Map -->
+<!-- ============================================================ -->
+
+<section id="geospatial-map" class="scroll-mt-20 mb-20">
+  
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <style>
+    /* Forces Google Chart Tooltip to overflow properly and remove default white borders */
+    div.google-visualization-tooltip { 
+      border: none !important; 
+      background: transparent !important; 
+      box-shadow: none !important; 
+    }
+    #regions_div path {
+        cursor: pointer;
+        stroke: #ffffff; /* Crisp white borders between states */
+        stroke-width: 1px;
+        transition: fill-opacity 0.2s ease, stroke-width 0.2s ease;
+    }
+    #regions_div path:hover {
+        fill-opacity: 0.7;
+        stroke-width: 2px;
+    }
+  </style>
+
+  <span class="section-label">Part 2.5 — Geospatial Arbitrage Map</span>
+  <h2 class="display-font text-3xl accent-blue mb-3">Quantitative Infrastructure Divergence</h2>
+  <p class="text-slate-500 text-sm max-w-4xl mb-6">
+    This map grades every Indian state based on its <strong>Total Renewable Potential (Solar + Wind)</strong>. Hover over any state to view the breakdown of its solar and wind capabilities versus its current Data Center load.
+  </p>
+
+  <div class="material-card p-6 bg-white relative">
+    
+    <div class="max-w-md mx-auto mb-6 p-4 bg-slate-50 rounded-xl border border-slate-100 shadow-sm">
+      <div class="flex justify-between text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">
+        <span>Low Potential (~0 GW)</span>
+        <span>Extreme Potential (1,100+ GW)</span>
+      </div>
+      <div class="w-full h-3 rounded-full" style="background: linear-gradient(to right, #FEF3C7, #F59E0B, #EA580C, #78350F);"></div>
+    </div>
+
+    <div id="regions_div" style="width: 100%; height: 680px; border-radius: 12px; overflow: hidden; background: #FFFFFF;"></div>
+    
+    <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+      <p class="text-[10px] text-slate-400 font-medium">
+        Data Center Load (IT Capacity) reflects H1 2026 operational + pipeline figures.
+      </p>
+      <div class="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-md border border-slate-200">
+        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Data Source:</span>
+        <span class="text-[11px] text-blue-700 font-black tracking-wide">India Climate & Energy Dashboard (ICED)</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    google.charts.load('current', { 'packages':['geochart'] });
+    google.charts.setOnLoadCallback(drawRegionsMap);
+
+    function drawRegionsMap() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'State Code');
+      data.addColumn('number', 'Total RE Potential (GW)'); // This drives the unique gradient color
+      data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
+
+      // Rich HTML Tooltip Generator including Wind + Solar Breakdown
+      function createTooltip(stateName, solarGW, windGW, totalGW, dcGW) {
+        return `
+          <div style="padding: 16px; background: rgba(15,23,42,0.95); backdrop-filter: blur(8px); color: #F8FAFC; border-radius: 12px; font-family: 'DM Sans', sans-serif; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 280px; border: 1px solid rgba(255,255,255,0.1);">
+             <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #334155; padding-bottom: 8px;">${stateName}</h3>
+             
+             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                 <span style="color: #94A3B8; font-size: 11px; font-weight: 700;">Solar Potential:</span>
+                 <span style="font-weight: 700; font-size: 13px; color: #fbbf24;">${solarGW} GW</span>
+             </div>
+
+             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                 <span style="color: #94A3B8; font-size: 11px; font-weight: 700;">Wind Potential (150m):</span>
+                 <span style="font-weight: 700; font-size: 13px; color: #38bdf8;">${windGW} GW</span>
+             </div>
+             
+             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px dotted #475569;">
+                 <span style="color: #cbd5e1; font-size: 11px; font-weight: 900; text-transform: uppercase;">Total RE Potential:</span>
+                 <span style="font-weight: 900; font-size: 14px; color: #f59e0b; background: rgba(245,158,11,0.15); padding: 2px 6px; border-radius: 4px;">${totalGW} GW</span>
+             </div>
+
+             <div style="display: flex; justify-content: space-between; align-items: center;">
+                 <span style="color: #cbd5e1; font-size: 11px; font-weight: 900; text-transform: uppercase;">DC Load (IT):</span>
+                 <span style="font-weight: 900; font-size: 14px; color: #0ea5e9; background: rgba(14,165,233,0.15); padding: 2px 6px; border-radius: 4px;">${dcGW}</span>
+             </div>
+          </div>
+        `;
+      }
+
+      // FULL INDIA DATASET (Solar + Wind Totals)
+      data.addRows([
+        // Extreme / High Tier (>300 GW)
+        [{v: 'IN-RJ', f: 'Rajasthan'}, 1113.03, createTooltip('Rajasthan', 828.78, 284.25, 1113.03, '< 0.05 GW')],
+        [{v: 'IN-MH', f: 'Maharashtra'}, 660.55, createTooltip('Maharashtra', 486.68, 173.87, 660.55, '1.80 GW')],
+        [{v: 'IN-KA', f: 'Karnataka'}, 468.56, createTooltip('Karnataka', 299.31, 169.25, 468.56, '0.30 GW')],
+        [{v: 'IN-GJ', f: 'Gujarat'}, 424.01, createTooltip('Gujarat', 243.22, 180.79, 424.01, '0.12 GW')],
+        [{v: 'IN-MP', f: 'Madhya Pradesh'}, 374.39, createTooltip('Madhya Pradesh', 318.97, 55.42, 374.39, '0.01 GW')],
+        [{v: 'IN-AP', f: 'Andhra Pradesh'}, 346.62, createTooltip('Andhra Pradesh', 223.28, 123.34, 346.62, '1.25 GW')],
+        [{v: 'IN-TN', f: 'Tamil Nadu'}, 299.88, createTooltip('Tamil Nadu', 204.77, 95.11, 299.88, '0.50 GW')],
+        
+        // Mid Tier (100 - 200 GW)
+        [{v: 'IN-TG', f: 'Telangana'}, 195.17, createTooltip('Telangana', 140.45, 54.72, 195.17, '0.40 GW')],
+        [{v: 'IN-OR', f: 'Odisha'}, 151.60, createTooltip('Odisha', 139.47, 12.13, 151.60, 'Minimal')],
+        [{v: 'IN-CT', f: 'Chhattisgarh'}, 129.23, createTooltip('Chhattisgarh', 126.48, 2.75, 129.23, 'Minimal')],
+        
+        // Lower Tier (< 100 GW)
+        [{v: 'IN-UP', f: 'Uttar Pradesh'}, 98.35, createTooltip('Uttar Pradesh', 97.84, 0.51, 98.35, '0.15 GW')],
+        [{v: 'IN-JH', f: 'Jharkhand'}, 51.85, createTooltip('Jharkhand', 51.83, 0.02, 51.85, 'Minimal')],
+        [{v: 'IN-BR', f: 'Bihar'}, 37.01, createTooltip('Bihar', 32.99, 4.02, 37.01, 'Minimal')],
+        [{v: 'IN-WB', f: 'West Bengal'}, 24.02, createTooltip('West Bengal', 22.74, 1.28, 24.02, '0.02 GW')],
+        [{v: 'IN-HP', f: 'Himachal Pradesh'}, 21.74, createTooltip('Himachal Pradesh', 21.50, 0.24, 21.74, 'Minimal')],
+        [{v: 'IN-AS', f: 'Assam'}, 19.63, createTooltip('Assam', 19.17, 0.46, 19.63, 'Minimal')],
+        [{v: 'IN-JK', f: 'Jammu & Kashmir'}, 17.15, createTooltip('Jammu & Kashmir', 17.15, 0.00, 17.15, 'Minimal')], 
+        [{v: 'IN-ML', f: 'Meghalaya'}, 14.73, createTooltip('Meghalaya', 14.67, 0.06, 14.73, 'Minimal')],
+        [{v: 'IN-KL', f: 'Kerala'}, 15.02, createTooltip('Kerala', 12.40, 2.62, 15.02, 'Minimal')],
+        [{v: 'IN-PB', f: 'Punjab'}, 9.64, createTooltip('Punjab', 9.21, 0.43, 9.64, 'Minimal')],
+        [{v: 'IN-TR', f: 'Tripura'}, 9.11, createTooltip('Tripura', 9.11, 0.00, 9.11, 'Minimal')],
+        [{v: 'IN-HR', f: 'Haryana'}, 7.06, createTooltip('Haryana', 6.47, 0.59, 7.06, 'Minimal')],
+        [{v: 'IN-GA', f: 'Goa'}, 6.76, createTooltip('Goa', 6.75, 0.01, 6.76, 'Minimal')],
+        [{v: 'IN-UT', f: 'Uttarakhand'}, 4.49, createTooltip('Uttarakhand', 4.44, 0.05, 4.49, 'Minimal')],
+        [{v: 'IN-MN', f: 'Manipur'}, 2.29, createTooltip('Manipur', 2.29, 0.00, 2.29, 'Minimal')],
+        [{v: 'IN-MZ', f: 'Mizoram'}, 0.61, createTooltip('Mizoram', 0.61, 0.00, 0.61, 'Minimal')],
+        [{v: 'IN-DL', f: 'Delhi'}, 0.55, createTooltip('Delhi', 0.55, 0.00, 0.55, '0.15 GW')],
+        [{v: 'IN-AR', f: 'Arunachal Pradesh'}, 0.72, createTooltip('Arunachal Pradesh', 0.47, 0.25, 0.72, 'Minimal')],
+        [{v: 'IN-NL', f: 'Nagaland'}, 0.19, createTooltip('Nagaland', 0.19, 0.00, 0.19, 'Minimal')],
+        [{v: 'IN-SK', f: 'Sikkim'}, 0.25, createTooltip('Sikkim', 0.25, 0.00, 0.25, 'Minimal')]
+      ]);
+
+      var options = {
+        region: 'IN', // Focus map on India
+        domain: 'IN',
+        displayMode: 'regions',
+        resolution: 'provinces',
+        backgroundColor: '#FFFFFF', // Pure white background
+        datalessRegionColor: '#FFFFFF', // Matches background exactly, hiding neighboring countries
+        colorAxis: {
+          // Continuous gradient array: Light Yellow -> Orange -> Red-Orange -> Deep Brown
+          colors: ['#FEF3C7', '#F59E0B', '#EA580C', '#78350F'],
+          minValue: 0,
+          maxValue: 1115 // Max combined potential is RJ at 1113.03
+        },
+        legend: 'none', // Using custom HTML gradient legend above
+        tooltip: { isHtml: true, trigger: 'focus' },
+        keepAspectRatio: true
+      };
+
+      var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
+      chart.draw(data, options);
+    }
+    
+    // Ensure the chart resizes beautifully if the window changes size
+    window.addEventListener('resize', drawRegionsMap);
+  </script>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: STATE-WISE DC TABLE -->
+<!-- ============================================================ -->
+<section id="landscape" class="scroll-mt-20">
+  <span class="section-label">Part 1 — State-Wise Landscape</span>
+  <h2 class="display-font text-3xl accent-blue mb-3">India Data Centers: State-Wise Overview</h2>
+  <p class="text-slate-500 text-sm max-w-4xl mb-6">Covering established, under-construction and announced/planned projects as of April 2026. Figures represent IT load (power to servers) unless otherwise stated. Data triangulated from company disclosures, state MoUs, and leading industry reports.</p>
+
+  <div class="flex gap-3 mb-4 flex-wrap">
+    <span class="tag tag-op">● Operational</span>
+    <span class="tag tag-uc">● Under Construction</span>
+    <span class="tag tag-pl">● Planned / Announced</span>
+    <span class="tag tag-em">● Emerging / Policy-Stage</span>
+  </div>
+
+  <div class="material-card overflow-hidden">
+  <div class="overflow-x-auto">
+  <table class="w-full">
+  <thead>
+    <tr>
+      <th style="min-width:120px">State / City</th>
+      <th style="min-width:180px">Company / Project</th>
+      <th>Status</th>
+      <th style="min-width:130px">Capacity (IT Load)</th>
+      <th style="min-width:100px">Land Area</th>
+      <th style="min-width:120px">Investment</th>
+      <th style="min-width:200px">Key Notes</th>
+      <th style="min-width:130px">Reference</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- MAHARASHTRA -->
+    <tr style="background:#f8fafc"><td colspan="8" class="py-2 px-4 text-xs font-black uppercase tracking-widest text-blue-800" style="background:#EFF6FF;border-left:4px solid #1E3A8A">Maharashtra (Mumbai / Navi Mumbai / Pune)</td></tr>
+    <tr><td><strong>Navi Mumbai</strong></td><td>Yotta D1 (Hiranandani Data Center Park)</td><td><span class="tag tag-op">Operational</span></td><td>72 MW</td><td>~20 acres</td><td>₹5,000 Cr+</td><td>Tier IV; Asia's highest single-building IT load at launch; Rabale hub</td><td><a class="ref-link" href="https://www.yottainfrastructure.com/" target="_blank">yottainfrastructure.com</a></td></tr>
+    <tr><td><strong>Navi Mumbai</strong></td><td>AdaniConneX — BOM-1 Hyperscale Campus</td><td><span class="tag tag-uc">Under Const.</span></td><td>~100 MW (1 GW platform total)</td><td>Multi-acre campus</td><td>~$5B platform</td><td>Adani + EdgeConneX (EQT) JV; AI-ready Tier IV; 6 campus platform</td><td><a class="ref-link" href="https://adaniconnex.com/" target="_blank">adaniconnex.com</a></td></tr>
+    <tr><td><strong>Navi Mumbai (Palava)</strong></td><td>STT GDC India — Palava Campus</td><td><span class="tag tag-uc">Under Const.</span></td><td>50 MW initial → 400 MW</td><td>46 acres</td><td>₹5,000 Cr (MoU)</td><td>Construction started Mar 2026; MoU with Maharashtra govt</td><td><a class="ref-link" href="https://www.sttelemediagdc.in/" target="_blank">sttelemediagdc.in</a></td></tr>
+    <tr><td><strong>Navi Mumbai (Airoli)</strong></td><td>Lumina CloudInfra (Blackstone) × Panchshil Realty</td><td><span class="tag tag-pl">Planned</span></td><td>500 MW (AI hyperscale)</td><td>Large campus</td><td>₹20,000 Cr</td><td>JV; MoU with Maharashtra; largest single campus plan</td><td><a class="ref-link" href="https://www.panchshil.com/" target="_blank">panchshil.com</a></td></tr>
+    <tr><td><strong>Navi Mumbai</strong></td><td>CtrlS — Multiple facilities (Airoli, MIDC)</td><td><span class="tag tag-uc">Under Const.</span></td><td>2M sq ft under construction</td><td>Multi-campus</td><td>₹3,000 Cr+</td><td>4 big DCs in Airoli MIDC; Tier IV hyperscale</td><td><a class="ref-link" href="https://www.ctrls.in/" target="_blank">ctrls.in</a></td></tr>
+    <tr><td><strong>Mumbai (Chandivali)</strong></td><td>Equinix — Mumbai MB series</td><td><span class="tag tag-op">Operational</span></td><td>~15–20 MW</td><td>1.38 acres new</td><td>$65M+</td><td>Carrier-neutral IXP; 33 MW renewable PPA with CleanMax</td><td><a class="ref-link" href="https://www.equinix.in/" target="_blank">equinix.in</a></td></tr>
+    <tr><td><strong>Mumbai/Pune</strong></td><td>Colt DCS × RMZ Digital — AI Campuses JV</td><td><span class="tag tag-uc">Under Const.</span></td><td>Hyperscale, undisclosed</td><td>—</td><td>$1.7B JV</td><td>AI-driven hyperscale demand; Mumbai + Bengaluru focus</td><td><a class="ref-link" href="https://www.coltdatacentres.net/" target="_blank">coltdatacentres.net</a></td></tr>
+    <tr><td><strong>Mumbai/Pune</strong></td><td>Web Werks × Iron Mountain India</td><td><span class="tag tag-op">Operational</span></td><td>Multi-MW, 4 cities</td><td>—</td><td>—</td><td>JV expanding across Mumbai, Pune, Bengaluru, Chennai</td><td><a class="ref-link" href="https://www.webwerks.in/" target="_blank">webwerks.in</a></td></tr>
+
+    <!-- TAMIL NADU -->
+    <tr><td colspan="8" class="py-2 px-4 text-xs font-black uppercase tracking-widest text-orange-800" style="background:#FFF7ED;border-left:4px solid #F97316">Tamil Nadu (Chennai / Siruseri / Ambattur)</td></tr>
+    <tr><td><strong>Chennai (Siruseri)</strong></td><td>AdaniConneX — CH-1 Campus</td><td><span class="tag tag-op">Operational</span></td><td>100 MW</td><td>~25 acres</td><td>₹5,000 Cr+ (multi-campus)</td><td>South India's largest AI-ready DC; flagship campus</td><td><a class="ref-link" href="https://adaniconnex.com/" target="_blank">adaniconnex.com</a></td></tr>
+    <tr><td><strong>Chennai</strong></td><td>Equinix — CH1 (First AI-ready DC)</td><td><span class="tag tag-op">Operational</span></td><td>~10 MW (expandable)</td><td>—</td><td>$69M</td><td>Opened Sept 2025; interconnection hub; SEA-ME-WE-6 cable landed 2025</td><td><a class="ref-link" href="https://www.equinix.in/locations/india-colocation/chennai-data-centers/" target="_blank">equinix.in</a></td></tr>
+    <tr><td><strong>Chennai (Ambattur)</strong></td><td>CapitaLand India Trust — Ambattur Facility</td><td><span class="tag tag-uc">Under Const.</span></td><td>54 MW</td><td>~10 acres</td><td>—</td><td>Target completion Q2 2026; advanced as of Dec 2024</td><td><a class="ref-link" href="https://www.capitalandindia.com/" target="_blank">capitalandindia.com</a></td></tr>
+    <tr><td><strong>Chennai</strong></td><td>Digital Connexion Chennai</td><td><span class="tag tag-op">Operational</span></td><td>20–30 MW</td><td>—</td><td>—</td><td>Immersion cooling; magnetic levitation chillers; zero water dependency</td><td><a class="ref-link" href="https://www.digitalconnexion.com/" target="_blank">digitalconnexion.com</a></td></tr>
+    <tr><td><strong>Chennai</strong></td><td>STT GDC India — Chennai halls</td><td><span class="tag tag-op">Operational</span></td><td>~50–80 MW (expanding)</td><td>—</td><td>$3.2B nationwide</td><td>Multiple Chennai halls; AI workload expansion</td><td><a class="ref-link" href="https://www.sttelemediagdc.in/" target="_blank">sttelemediagdc.in</a></td></tr>
+    <tr><td><strong>Chennai</strong></td><td>NTT Data Centers — Chennai</td><td><span class="tag tag-op">Operational</span></td><td>~20 MW</td><td>—</td><td>—</td><td>MIST cable (8,100 km) connected 2023; 200 TBPS capacity</td><td><a class="ref-link" href="https://services.global.ntt/" target="_blank">global.ntt</a></td></tr>
+    <tr><td><strong>Chennai (Ambattur)</strong></td><td>Web Werks — Chennai DC</td><td><span class="tag tag-op">Operational</span></td><td>20 MW</td><td>—</td><td>₹750 Cr</td><td>MoU with Tamil Nadu Govt; 100 direct jobs</td><td><a class="ref-link" href="https://www.webwerks.in/" target="_blank">webwerks.in</a></td></tr>
+    <tr><td><strong>Chennai</strong></td><td>Nxtra by Airtel</td><td><span class="tag tag-op">Operational</span></td><td>~15–20 MW</td><td>—</td><td>—</td><td>SEA-ME-WE-6 cable landing; Sify expanding AI-focused capacity</td><td><a class="ref-link" href="https://www.nxtra.in/" target="_blank">nxtra.in</a></td></tr>
+
+    <!-- ANDHRA PRADESH -->
+    <tr><td colspan="8" class="py-2 px-4 text-xs font-black uppercase tracking-widest text-teal-800" style="background:#F0FDFA;border-left:4px solid #0D9488">Andhra Pradesh (Visakhapatnam)</td></tr>
+    <tr><td><strong>Visakhapatnam (Madhurawada)</strong></td><td>Adani Enterprises — Data Center Park</td><td><span class="tag tag-uc">Under Const.</span></td><td>200 MW</td><td>130 acres</td><td>₹14,634 Cr</td><td>Allotted Nov 2021; includes business park + skill university; AP IT Policy special package</td><td><a class="ref-link" href="https://www.adani.com/" target="_blank">adani.com</a></td></tr>
+    <tr><td><strong>Visakhapatnam (Rushikonda IT Park)</strong></td><td>Sify Infinit Spaces — Vizag + Cable Landing Station</td><td><span class="tag tag-uc">Under Const.</span></td><td>50 MW</td><td>3.6 acres</td><td>$168M</td><td>Broke ground Oct 2025; 2-phase build; open cable landing station (CLS)</td><td><a class="ref-link" href="https://www.sifytech.com/" target="_blank">sifytech.com</a></td></tr>
+    <tr><td><strong>Visakhapatnam</strong></td><td>Google (Raiden Infotech) — Adani AI Campus</td><td><span class="tag tag-pl">Planned</span></td><td>1,000 MW</td><td>600+ acres (3 campuses)</td><td>$15B</td><td>Largest India AI investment; distribution license model; campuses at Adavivaram, Tarluvada, Rambilli</td><td><a class="ref-link" href="https://blog.google/intl/en-in/" target="_blank">blog.google</a></td></tr>
+    <tr><td><strong>Visakhapatnam</strong></td><td>Reliance Industries — AI Data Center</td><td><span class="tag tag-pl">Planned</span></td><td>1,000 MW</td><td>Large campus</td><td>₹98,000 Cr (consortium)</td><td>Dec 2025 announcement; Reliance–Brookfield–Digital Realty consortium</td><td><a class="ref-link" href="https://www.ril.com/" target="_blank">ril.com</a></td></tr>
+
+    <!-- TELANGANA -->
+    <tr><td colspan="8" class="py-2 px-4 text-xs font-black uppercase tracking-widest text-pink-800" style="background:#FDF4FF;border-left:4px solid #A21CAF">Telangana (Hyderabad)</td></tr>
+    <tr><td><strong>Hyderabad (Chandan Valley)</strong></td><td>CtrlS — Chandan Valley Campus</td><td><span class="tag tag-uc">Under Const.</span></td><td>612 MW IT capacity</td><td>40 acres</td><td>₹8,000 Cr+</td><td>Started Sept 2025; operational FY2027–28; 900 MW GIS substation; solar facades + liquid cooling</td><td><a class="ref-link" href="https://www.ctrls.in/" target="_blank">ctrls.in</a></td></tr>
+    <tr><td><strong>Hyderabad (Mucherla)</strong></td><td>STT GDC India — Hyderabad Campus</td><td><span class="tag tag-pl">Planned</span></td><td>Hyperscale (undisclosed)</td><td>—</td><td>$412M</td><td>MoU with Telangana government</td><td><a class="ref-link" href="https://www.sttelemediagdc.in/" target="_blank">sttelemediagdc.in</a></td></tr>
+    <tr><td><strong>Hyderabad</strong></td><td>Airtel Nxtra — Hyderabad Campus</td><td><span class="tag tag-pl">Planned</span></td><td>200 MW</td><td>—</td><td>—</td><td>Announced 2025; targets AI workloads; several years to operationalize</td><td><a class="ref-link" href="https://www.nxtra.in/" target="_blank">nxtra.in</a></td></tr>
+
+    <!-- KARNATAKA -->
+    <tr><td colspan="8" class="py-2 px-4 text-xs font-black uppercase tracking-widest text-green-800" style="background:#F0FDF4;border-left:4px solid #16A34A">Karnataka (Bengaluru)</td></tr>
+    <tr><td><strong>Bengaluru</strong></td><td>NTT Ltd — Bengaluru 4 Campus</td><td><span class="tag tag-uc">Under Const.</span></td><td>100 MW facility / 67.2 MW IT</td><td>8.5 acres</td><td>₹2,400 Cr</td><td>Announced Dec 2025; first hall (4A) at 22.4 MW IT operational</td><td><a class="ref-link" href="https://services.global.ntt/" target="_blank">global.ntt</a></td></tr>
+    <tr><td><strong>Bengaluru</strong></td><td>Multiple Operators (STT GDC, Sify, CtrlS, Equinix, Web Werks)</td><td><span class="tag tag-op">Operational</span></td><td>~107 MW combined; →203 MW by 2025</td><td>Multiple sites</td><td>—</td><td>7% national share; land scarcity + grid limits slowing expansion vs Mumbai</td><td><a class="ref-link" href="https://www.sifytech.com/" target="_blank">sifytech.com</a></td></tr>
+
+    <!-- GUJARAT -->
+    <tr><td colspan="8" class="py-2 px-4 text-xs font-black uppercase tracking-widest text-amber-800" style="background:#FFFBEB;border-left:4px solid #D97706">Gujarat (Jamnagar / Ahmedabad / GIFT City)</td></tr>
+    <tr><td><strong>Jamnagar</strong></td><td>Reliance Industries — Jamnagar AI Data Center</td><td><span class="tag tag-pl">Planned</span></td><td>1,000 MW (Phase 1); 3 GW total</td><td>Large campus</td><td>$1B+ (Phase 1)</td><td>Jan 2025 announcement; 20 GW integrated renewables; NVIDIA partnership</td><td><a class="ref-link" href="https://www.ril.com/" target="_blank">ril.com</a></td></tr>
+    <tr><td><strong>Ahmedabad / GIFT City</strong></td><td>Multiple operators (emerging)</td><td><span class="tag tag-pl">Planned</span></td><td>~80 MW upcoming</td><td>—</td><td>—</td><td>GIFT City fintech workloads; Dholera SIR also in pipeline</td><td><a class="ref-link" href="https://giftgujarat.in/" target="_blank">giftgujarat.in</a></td></tr>
+
+    <!-- DELHI-NCR -->
+    <tr><td colspan="8" class="py-2 px-4 text-xs font-black uppercase tracking-widest text-blue-800" style="background:#EFF6FF;border-left:4px solid #2563EB">Delhi-NCR (Noida / Gurugram)</td></tr>
+    <tr><td><strong>Noida</strong></td><td>Multiple (Yotta, NTT, STT GDC, CtrlS, Sify)</td><td><span class="tag tag-op">Operational</span></td><td>~152 MW combined (10% national share)</td><td>Multiple sites</td><td>—</td><td>NTT opened first Delhi-NCR DC June 2024; 49% colocation vacancy rate</td><td><a class="ref-link" href="https://services.global.ntt/" target="_blank">global.ntt</a></td></tr>
+
+    <!-- WEST BENGAL -->
+    <tr><td colspan="8" class="py-2 px-4 text-xs font-black uppercase tracking-widest text-red-800" style="background:#FFF1F2;border-left:4px solid #DC2626">West Bengal (Kolkata)</td></tr>
+    <tr><td><strong>Kolkata (New Town)</strong></td><td>CtrlS — Kolkata Campus (First Rated-4 in East India)</td><td><span class="tag tag-pl">Planned</span></td><td>~115 MW pipeline; 15 MW operational</td><td>—</td><td>₹2,200 Cr</td><td>First Rated-4 facility in eastern India; driven by Puri cable landing station (2025)</td><td><a class="ref-link" href="https://www.ctrls.in/" target="_blank">ctrls.in</a></td></tr>
+
+    <!-- UP -->
+    <tr><td colspan="8" class="py-2 px-4 text-xs font-black uppercase tracking-widest text-slate-700" style="background:#F8FAFC;border-left:4px solid #64748B">Uttar Pradesh (Lucknow / Greater Noida)</td></tr>
+    <tr><td><strong>Lucknow</strong></td><td>Sify Infinit Spaces — AI-Hub Lucknow</td><td><span class="tag tag-uc">Under Const.</span></td><td>Multi-phase</td><td>—</td><td>—</td><td>Broke ground Feb 2025; Phase 1 delayed beyond June 2025 target</td><td><a class="ref-link" href="https://www.sifytech.com/" target="_blank">sifytech.com</a></td></tr>
+    <tr><td><strong>Greater Noida (Tusiana)</strong></td><td>Yotta Data Center Park</td><td><span class="tag tag-op">Operational</span></td><td>~20+ MW</td><td>20 acres</td><td>₹2,000 Cr</td><td>Inaugurated 2022; UP Data Centre Policy 2021; water sustainability concerns reported</td><td><a class="ref-link" href="https://www.yottainfrastructure.com/" target="_blank">yottainfrastructure.com</a></td></tr>
+
+    <!-- MADHYA PRADESH -->
+    <tr><td colspan="8" class="py-2 px-4 text-xs font-black uppercase tracking-widest text-purple-800" style="background:#FAF5FF;border-left:4px solid #7C3AED">Madhya Pradesh (Bhopal)</td></tr>
+    <tr><td><strong>Bhopal (Badwai IT Park)</strong></td><td>CtrlS — AI-Ready DC (MP GCC Policy 2025)</td><td><span class="tag tag-uc">Under Const.</span></td><td>12 MW</td><td>5 acres</td><td>₹500 Cr</td><td>Broke ground Apr 2025; MP Global Capacity Centers Policy 2025; targets MNCs</td><td><a class="ref-link" href="https://www.ctrls.in/" target="_blank">ctrls.in</a></td></tr>
+
+    <!-- RAJASTHAN -->
+    <tr><td colspan="8" class="py-2 px-4 text-xs font-black uppercase tracking-widest text-lime-800" style="background:#F7FEE7;border-left:4px solid #65A30D">Rajasthan (Jaipur / Emerging)</td></tr>
+    <tr><td><strong>Jaipur / Emerging</strong></td><td>Micro-Edge DCs + Rajasthan DC Policy 2025</td><td><span class="tag tag-em">Emerging</span></td><td>2–5 MW micro-edge each</td><td>—</td><td>—</td><td>India's most comprehensive sustainability-oriented DC policy (2025); mandatory ZLD, rainwater harvesting; no major hyperscale DC yet</td><td><a class="ref-link" href="https://investrajasthan.rajasthan.gov.in/" target="_blank">investrajasthan.rajasthan.gov.in</a></td></tr>
+  </tbody>
+  </table>
+  </div>
+  </div>
+  <p class="text-xs text-slate-400 mt-3">Sources: Cushman & Wakefield India DC H1 2025; BlackRidge Research 2026; company disclosures; state MoU announcements. Capacity = IT load (power to servers) unless stated. Total operational ≈ 1.5–1.7 GW; pipeline ≈ 2.9 GW (Cushman & Wakefield, Colliers).</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: UNDERSTANDING - WHY SOUTH vs WEST -->
+<!-- ============================================================ -->
+<section id="statecomp" class="scroll-mt-20">
+  <span class="section-label">Part 2 — Strategic Analysis</span>
+  <h2 class="display-font text-3xl accent-blue mb-3">Why Data Centers Cluster in South India While Solar IPPs Choose Rajasthan & Gujarat</h2>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+    <div class="material-card p-6 border-l-4 border-cyan-500">
+      <h3 class="font-black text-slate-900 mb-3">The Core Logic (One Paragraph)</h3>
+      <p class="text-sm text-slate-600 leading-relaxed">Data centers and solar farms have fundamentally opposite locational requirements. Data centers are demand-centric infrastructure — they cluster near latency-sensitive consumers, submarine cable landing stations, reliable grids, and coastal water access. Solar IPPs are supply-centric infrastructure — they chase maximum irradiation, vast barren land, and favorable open-access economics. This structural divergence explains why India's digital infrastructure map looks nothing like its renewable energy map.</p>
+    </div>
+    <div class="material-card p-6 border-l-4 border-orange-500">
+      <h3 class="font-black text-slate-900 mb-3">The Structural Divergence</h3>
+      <div class="space-y-2">
+        <div class="flex items-start gap-3">
+          <span class="text-lg mt-0.5">🖥</span>
+          <div><div class="text-sm font-bold text-slate-800">Data Centers follow:</div><div class="text-xs text-slate-500">Submarine cables → IT demand clusters → Coastal water → Stable grid → Skilled workforce</div></div>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="text-lg mt-0.5">☀️</span>
+          <div><div class="text-sm font-bold text-slate-800">Solar IPPs follow:</div><div class="text-xs text-slate-500">Maximum GHI irradiation → Vast arid land → Low land cost → ISTS evacuation corridors → Nearby industrial demand</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAILED REASONS -->
+  <h3 class="font-black text-slate-900 text-xl mb-6">Why Tamil Nadu & Andhra Pradesh Win (for Data Centers)</h3>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+    <div class="material-card p-5">
+      <div class="flex items-center gap-3 mb-3"><div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-content-center font-black text-blue-700 text-sm flex-shrink-0" style="display:flex;align-items:center;justify-content:center">1</div><h4 class="font-black text-slate-800">Submarine Cable Access — Irreplaceable Moat</h4></div>
+      <p class="text-xs text-slate-600 leading-relaxed">Tamil Nadu houses over 30% of India's subsea cables with 6 cables totaling 14.8 TBPS capacity. SEA-ME-WE-6 landed at Chennai in Feb 2025 adding 220 TBPS. Andhra Pradesh is building its first cable landing station at Vizag (Sify's open CLS). No amount of cheap inland power can substitute this — latency is non-negotiable for AI workloads and global cloud.</p>
+      <p class="text-[10px] text-slate-400 mt-2">Source: TN DC Policy 2021 (it.tn.gov.in); W.Media Chennai analysis</p>
+    </div>
+    <div class="material-card p-5">
+      <div class="flex items-center gap-3 mb-3"><div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-content-center font-black text-blue-700 text-sm flex-shrink-0" style="display:flex;align-items:center;justify-content:center">2</div><h4 class="font-black text-slate-800">Aggressive State Policy & Incentive Design</h4></div>
+      <p class="text-xs text-slate-600 leading-relaxed">TN DC Policy 2021: 100% electricity duty waiver for 5 years, 100% stamp duty waiver in Tier C districts, 50% in A/B, concessional open access charges, dual power grid access, and single-window approvals within 90 days. AP DC Policy 4.0 (2024–29): 6 GW target, 25% land cost discount, 100% stamp duty exemption, 10% capex subsidy on machinery for 10 years.</p>
+      <p class="text-[10px] text-slate-400 mt-2">Source: it.tn.gov.in; teamleaseregtech.com (AP Policy 4.0)</p>
+    </div>
+    <div class="material-card p-5">
+      <div class="flex items-center gap-3 mb-3"><div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-content-center font-black text-blue-700 text-sm flex-shrink-0" style="display:flex;align-items:center;justify-content:center">3</div><h4 class="font-black text-slate-800">Water Availability & Coastal Cooling</h4></div>
+      <p class="text-xs text-slate-600 leading-relaxed">A 100 MW data center consumes ~2 million litres/day for cooling (IEA 2025). Coastal Tamil Nadu and AP have access to seawater cooling — AP specifically promotes seawater cooling for coastal DCs (CEEW 2026). Rajasthan has among India's lowest per-capita water availability (NITI Aayog); Gujarat's Kutch region is severely water-stressed. This constraint alone rules out Rajasthan/Gujarat for traditional evaporative cooling systems.</p>
+      <p class="text-[10px] text-slate-400 mt-2">Source: CEEW Feb 2026 (ceew.in); IEA 2025; Takshashila Oct 2025</p>
+    </div>
+    <div class="material-card p-5">
+      <div class="flex items-center gap-3 mb-3"><div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-content-center font-black text-blue-700 text-sm flex-shrink-0" style="display:flex;align-items:center;justify-content:center">4</div><h4 class="font-black text-slate-800">Seismic Risk Profile</h4></div>
+      <p class="text-xs text-slate-600 leading-relaxed">Hyderabad and Visakhapatnam are in Seismic Zone II (lowest risk category, BIS IS 1893). Most of Tamil Nadu and AP's Deccan plateau region is in Zone II. In contrast, Gujarat's Kutch region is in Seismic Zone V — India's highest risk zone (Bhuj 2001 earthquake: 7.7 magnitude, 20,000 deaths). Mission-critical Tier III/IV data centers explicitly avoid Zone IV/V locations for insurance and resilience reasons.</p>
+      <p class="text-[10px] text-slate-400 mt-2">Source: PIB Seismic Zones (pib.gov.in); BIS IS 1893:2002</p>
+    </div>
+    <div class="material-card p-5">
+      <div class="flex items-center gap-3 mb-3"><div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-content-center font-black text-blue-700 text-sm flex-shrink-0" style="display:flex;align-items:center;justify-content:center">5</div><h4 class="font-black text-slate-800">Electricity Tariffs & Open Access Economics</h4></div>
+      <p class="text-xs text-slate-600 leading-relaxed">Tamil Nadu: ~₹5.8/unit average (national low); 100% CSS exemption for solar OA under green energy policy. AP: ~₹6.8/unit with 100% CSS + Additional Surcharge waiver for solar OA (5 years). For comparison, Rajasthan: ~₹7.9/unit (comparatively high due to transmission costs over large state). Gujarat: ~₹5.2/unit but additional surcharge increased to ₹1/kWh Oct 2025. Landed solar OA cost: Maharashtra highest (₹8+/kWh), Telangana and UP lowest (₹5–₹6/kWh).</p>
+      <p class="text-[10px] text-slate-400 mt-2">Source: Mercom India Q3 2025; Forum of Regulators Open Access Report</p>
+    </div>
+    <div class="material-card p-5">
+      <div class="flex items-center gap-3 mb-3"><div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-content-center font-black text-blue-700 text-sm flex-shrink-0" style="display:flex;align-items:center;justify-content:center">6</div><h4 class="font-black text-slate-800">Skilled Workforce — Often Underrated</h4></div>
+      <p class="text-xs text-slate-600 leading-relaxed">Tamil Nadu provides the largest technically qualified IT workforce nationally — 7 lakh+ direct IT workers; 18 IT/ITeS SEZs; SaaS capital of India (W.Media). Hyderabad has Google, Microsoft, Meta campuses creating deep data center operations talent. Rajasthan (Jaipur) and Gujarat (Ahmedabad/Surat) lack pools of data center operations engineers, power systems specialists, and AI infrastructure professionals needed for hyperscale facilities.</p>
+      <p class="text-[10px] text-slate-400 mt-2">Source: W.Media Chennai ecosystem report; storyboard18.com Dec 2025</p>
+    </div>
+  </div>
+
+  <!-- WHY RAJASTHAN/GUJARAT FOR SOLAR -->
+  <h3 class="font-black text-slate-900 text-xl mb-6">Why Rajasthan & Gujarat Win (for Solar IPPs like Excell Solar)</h3>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+    <div class="material-card p-5 border-l-4 border-amber-500">
+      <h4 class="font-black text-slate-800 mb-2">☀️ Solar Irradiation — The Primary Driver</h4>
+      <p class="text-xs text-slate-600 leading-relaxed">Rajasthan receives 5.5–6.0 kWh/m²/day GHI across the Thar Desert; Gujarat averages 5.2–5.8 kWh/m²/day. Tamil Nadu and AP coastal regions average 4.5–5.2 kWh/m²/day — 10–25% lower annually. For a solar IPP, this directly determines competitive PPA tariff: ~₹2.5–₹2.8/unit in RJ/GJ vs ₹2.9–₹3.2/unit in coastal states. Rajasthan had the highest installed renewable capacity nationally at 29,981 MW; Gujarat second at 29,525 MW (IEEFA Oct 2024).</p>
+      <p class="text-[10px] text-slate-400 mt-2">Source: IEEFA Oct 2024 (ieefa.org); Mercom India Solar Open Access 2025</p>
+    </div>
+    <div class="material-card p-5 border-l-4 border-amber-500">
+      <h4 class="font-black text-slate-800 mb-2">🏜 Vast Non-Agricultural Land at Low Cost</h4>
+      <p class="text-xs text-slate-600 leading-relaxed">Utility-scale solar requires 4–5 acres/MW. Rajasthan's Thar Desert has millions of acres of barren, non-agricultural land at ₹10–₹50 lakh/acre vs ₹3–₹15 crore/acre in coastal DC zones. Bhadla Solar Park spans 14,000+ acres. Gujarat's Rann of Kutch similarly offers large flat tracts at minimal cost. Data centers need only 3–50 acres but require proximity to cable stations, fiber, and labor — none available in desert regions.</p>
+      <p class="text-[10px] text-slate-400 mt-2">Source: Avaada.com land analysis; IEEFA briefing note 2024</p>
+    </div>
+    <div class="material-card p-5 border-l-4 border-amber-500">
+      <h4 class="font-black text-slate-800 mb-2">⚡ Open Access & CSS Waiver Economics</h4>
+      <p class="text-xs text-slate-600 leading-relaxed">Rajasthan has India's largest open access solar pipeline at ~10.2 GW (Mercom, June 2025) and ~2.4 GW installed solar OA capacity (9.8% of national total). Rajasthan offers full CSS waiver for solar OA; Gujarat gives 100% CSS waiver for solar. Rajasthan's battery storage policy is "most aggressive for open access" (Mercom Oct 2025) — requiring ≥5 MW solar projects to include storage. Landed cost in RJ/GJ: ₹5–₹6/kWh vs DISCOM ₹7.5–₹9/kWh — 20–35% savings for nearby industrial consumers.</p>
+      <p class="text-[10px] text-slate-400 mt-2">Source: Mercom India Rajasthan OA analysis Oct 2025; ICRA RE report 2023</p>
+    </div>
+    <div class="material-card p-5 border-l-4 border-amber-500">
+      <h4 class="font-black text-slate-800 mb-2">🏭 Nearby Industrial Demand (Cement, Chemicals, Mining)</h4>
+      <p class="text-xs text-slate-600 leading-relaxed">Solar IPPs like Excell Solar serve energy-intensive industries in their neighboring states — cement plants, mining operations, chemical complexes, textile mills — that are heavy electricity consumers with industrial tariffs of ₹7–₹9/unit. This makes solar OA commercially attractive. Data centers, by contrast, can sign PPAs with solar developers regardless of geographic proximity — they don't need to be co-located with the solar plant. A Chennai DC can have its renewable PPA sourced from Rajasthan via ISTS.</p>
+      <p class="text-[10px] text-slate-400 mt-2">Source: JMK Research open access viability; Forum of Regulators (FOR) OA report</p>
+    </div>
+  </div>
+
+  <!-- STATE COMPARISON MATRIX -->
+  <h3 class="font-black text-slate-900 text-xl mb-4">State Comparison Matrix — Key Parameters</h3>
+  <div class="material-card overflow-hidden mb-4">
+  <div class="overflow-x-auto">
+  <table class="w-full" style="min-width:900px">
+  <thead>
+    <tr>
+      <th style="min-width:180px">Parameter</th>
+      <th style="background:#FFF7ED;color:#92400E;min-width:130px">Tamil Nadu</th>
+      <th style="background:#F0FDFA;color:#134E4A;min-width:130px">Andhra Pradesh</th>
+      <th style="background:#FDF4FF;color:#6B21A8;min-width:130px">Telangana</th>
+      <th style="background:#FFFBEB;color:#92400E;min-width:130px">Gujarat</th>
+      <th style="background:#F7FEE7;color:#3F6212;min-width:130px">Rajasthan</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td class="font-bold text-slate-700 bg-slate-50 text-xs">Submarine Cable Access</td>
+      <td style="background:#F0FDF4" class="text-xs font-semibold text-green-800">★★★★★ — 30% of India's cables; 14.8 TBPS; SEA-ME-WE-6 landed 2025</td>
+      <td style="background:#F0FDF4" class="text-xs font-semibold text-green-800">★★★★ — New CLS at Vizag; eastern Bay of Bengal gateway</td>
+      <td style="background:#FFFBEB" class="text-xs font-semibold text-amber-800">★★★ — Inland; relies on Chennai/Mumbai latency</td>
+      <td style="background:#FFF1F2" class="text-xs font-semibold text-red-800">★★ — No active CLS; Jamnagar far from cable routes</td>
+      <td style="background:#FFF1F2" class="text-xs font-semibold text-red-800">★ — Landlocked; zero subsea cable access</td>
+    </tr>
+    <tr><td class="font-bold text-slate-700 bg-slate-50 text-xs">Industrial Electricity Tariff</td>
+      <td class="text-xs font-semibold text-green-800">~₹5.8/unit (national low); 100% ED waiver 5 yrs</td>
+      <td class="text-xs font-semibold text-green-800">~₹6.8/unit; 100% CSS exemption solar OA; special packages</td>
+      <td class="text-xs text-amber-800">~₹7.6/unit; subsidised under TS DC Policy</td>
+      <td class="text-xs font-semibold text-green-800">~₹5.2/unit (low); 100% ED waiver for RE-powered DCs</td>
+      <td class="text-xs text-amber-800">~₹7.9/unit (high due to transmission costs)</td>
+    </tr>
+    <tr><td class="font-bold text-slate-700 bg-slate-50 text-xs">Water Availability & Cooling</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">Coastal; seawater cooling; managed monsoon risk</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">Coastal; AP govt promotes seawater cooling for DCs</td>
+      <td class="text-xs text-amber-800">Inland; municipal water; Musi river basin</td>
+      <td style="background:#FFF1F2" class="text-xs text-red-800">Arid; no coastal cooling; severe water scarcity</td>
+      <td style="background:#FFF1F2" class="text-xs text-red-800">Very scarce; Thar Desert; ZLD mandated in policy</td>
+    </tr>
+    <tr><td class="font-bold text-slate-700 bg-slate-50 text-xs">Seismic Risk (BIS IS 1893)</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">Zone II–III: Low–moderate; stable Deccan plateau</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">Zone II–III: Vizag in low-moderate zone; stable</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">Zone II: Hyderabad — lowest seismic risk nationally</td>
+      <td style="background:#FFF1F2" class="text-xs text-red-800">Zone III–V: Kutch in Zone V; Bhuj 2001 (7.7M); high risk</td>
+      <td class="text-xs text-amber-800">Zone II–III: Jaipur low; NW parts in III–IV</td>
+    </tr>
+    <tr><td class="font-bold text-slate-700 bg-slate-50 text-xs">Dedicated DC Policy</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">TN DC Policy 2021: 100% stamp duty; 90-day approvals; land subsidy</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">AP DC Policy 4.0 (2024–29): 6 GW target; 10% capex subsidy</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">TS DC Policy 2016 (revised): dual grid; no statutory cuts</td>
+      <td class="text-xs text-amber-800">No dedicated DC policy; GIFT City SEZ-based incentives</td>
+      <td class="text-xs text-amber-800">RJ DC Policy 2025: sustainability-focused; no hyperscale takers yet</td>
+    </tr>
+    <tr><td class="font-bold text-slate-700 bg-slate-50 text-xs">CSS (Open Access Solar)</td>
+      <td class="text-xs text-amber-800">Higher CSS (₹1.50+/unit); but AS reduced 81.5% to ₹0.1/kWh (Apr–Sep 2025); 50% CSS waiver for RE</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">100% CSS + AS waiver for solar OA (5 years) — most competitive</td>
+      <td class="text-xs text-amber-800">CSS applicable; AS removed then reintroduced; volatile</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">Full CSS waiver for solar OA; AS ₹1/kWh (Oct 2025)</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">Full CSS waiver for solar; RERC caps AS; strong for IPPs</td>
+    </tr>
+    <tr><td class="font-bold text-slate-700 bg-slate-50 text-xs">Solar Irradiation (GHI)</td>
+      <td class="text-xs text-amber-800">4.5–5.2 kWh/m²/day; adequate for OA but not optimal</td>
+      <td class="text-xs text-amber-800">4.5–5.2 kWh/m²/day; coastal AP; moderate</td>
+      <td class="text-xs text-amber-800">4.8–5.5 kWh/m²/day; moderate</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">5.2–5.8 kWh/m²/day; 25.5 GW solar installed (2025)</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">5.5–6.0 kWh/m²/day; highest nationally; Bhadla park 14,000+ acres</td>
+    </tr>
+    <tr><td class="font-bold text-slate-700 bg-slate-50 text-xs">Land Availability & Cost</td>
+      <td class="text-xs text-amber-800">Chennai urban land tight; Siruseri concentrated; Tier-II cheaper</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">Large parcels at concessional rates; 130-acre allotments near CLS</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">Chandan Valley 40 acres; outskirts (Mucherla) affordable</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">Vast land; Dholera SIR; Jamnagar port-adjacent; very cheap</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">Cheapest land in India; millions of acres arid land</td>
+    </tr>
+    <tr><td class="font-bold text-slate-700 bg-slate-50 text-xs">Skilled IT / DC Workforce</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">Largest IT workforce nationally; 7L+ direct IT jobs; SaaS capital</td>
+      <td class="text-xs text-amber-800">Growing; Vizag positioned as IT hub; talent pipeline improving</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">Hyderabad major IT hub; Google, Microsoft, Meta campuses</td>
+      <td class="text-xs text-amber-800">GIFT City finance talent; limited DC operations workforce</td>
+      <td style="background:#FFF1F2" class="text-xs text-red-800">Jaipur IT presence but limited hyperscale DC operations talent</td>
+    </tr>
+    <tr><td class="font-bold text-slate-700 bg-slate-50 text-xs">ISTS Charges (Inter-State)</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">Not applicable for intra-TN procurement; strong local RE</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">Local southern grid; minimizes inter-state costs</td>
+      <td class="text-xs text-amber-800">Some ISTS if procuring RE from AP/RJ; southern grid helps</td>
+      <td class="text-xs text-amber-800">ISTS charges if exporting to other states: ₹0.80–₹1.20/unit</td>
+      <td style="background:#FFF1F2" class="text-xs text-red-800">Heavy ISTS burden if evacuating power to distant load centers: ₹1–₹1.50+/unit</td>
+    </tr>
+    <tr><td class="font-bold text-slate-700 bg-slate-50 text-xs">Climate / Disaster Risk</td>
+      <td class="text-xs text-amber-800">Cyclone risk; Chennai flooding; monsoon; managed with elevated design</td>
+      <td class="text-xs text-amber-800">Cyclone risk (Phailin, Hudhud history); Vizag manages with resilient design</td>
+      <td style="background:#F0FDF4" class="text-xs text-green-800">Inland; lower cyclone/flood risk; stable Deccan geology</td>
+      <td style="background:#FFF1F2" class="text-xs text-red-800">Seismic Zone V (Kutch); extreme heat 50°C+; compound risk</td>
+      <td style="background:#FFF1F2" class="text-xs text-red-800">Extreme heat 50°C+; sand/dust degrades equipment; no coastal cooling</td>
+    </tr>
+    <tr><td class="font-bold text-slate-700 bg-slate-50 text-xs">Key Verdict for Data Centers</td>
+      <td style="background:#D1FAE5" class="text-xs font-black text-green-900">✅ Strong — cable + policy + workforce</td>
+      <td style="background:#D1FAE5" class="text-xs font-black text-green-900">✅ Very Strong — emerging hyperscale hub</td>
+      <td style="background:#D1FAE5" class="text-xs font-black text-green-900">✅ Strong — lowest seismic risk + IT ecosystem</td>
+      <td style="background:#FEF9C3" class="text-xs font-black text-yellow-800">⚠️ Partial — Reliance's Jamnagar unique RE play</td>
+      <td style="background:#FEE2E2" class="text-xs font-black text-red-800">❌ Poor — no cable, no water, no talent, extreme heat</td>
+    </tr>
+    <tr><td class="font-bold text-slate-700 bg-slate-50 text-xs">Key Verdict for Solar IPPs</td>
+      <td style="background:#FEF9C3" class="text-xs font-black text-yellow-800">⚠️ Moderate — good but not optimal irradiation</td>
+      <td style="background:#FEF9C3" class="text-xs font-black text-yellow-800">⚠️ Moderate — competitive CSS exemption offsets irradiation gap</td>
+      <td style="background:#FEF9C3" class="text-xs font-black text-yellow-800">⚠️ Moderate — reasonable but volatile OA regime</td>
+      <td style="background:#D1FAE5" class="text-xs font-black text-green-900">✅ Very Strong — high GHI, low land cost, stable DISCOM</td>
+      <td style="background:#D1FAE5" class="text-xs font-black text-green-900">✅ Strongest — highest GHI, cheapest land, largest OA pipeline</td>
+    </tr>
+  </tbody>
+  </table>
+  </div>
+  </div>
+  <p class="text-xs text-slate-400 mb-2">Sources: Forum of Regulators OA Report (forumofregulators.gov.in); CEEW Feb 2026 (ceew.in); Mercom India Q3 2025; IEEFA Oct 2024; BIS IS 1893:2002; storyboard18.com Dec 2025; indianinfrastructure.com Dec 2024.</p>
+</section>
+
+</main>
+
+
+<!-- ============================================================ -->
+<!-- SECTION 9: CONSULTANT LENS (Last) -->
+<!-- ============================================================ -->
+<section class="scroll-mt-20">
+  <div class="material-card p-10 bg-blue-900 text-white">
+    <span class="section-label">Consultant's Final Verdict</span>
+    <h2 class="display-font text-3xl mb-4">The Real Bet</h2>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div>
+        <p class="text-blue-100 leading-relaxed text-sm mb-4">This is not a data center investment. This is not an energy procurement decision. This is a structural repositioning of Google as a <strong>digital + energy infrastructure company</strong> — internalizing energy as a core production input for AI, not a utility cost.</p>
+        <p class="text-blue-100 leading-relaxed text-sm mb-4">India's geography explains the strategy: coastal states (Tamil Nadu, Andhra Pradesh) win the hyperscale data center race because they offer the irreplaceable combination of submarine cable latency, stable coastal water access, low seismic risk, and aggressive policy support. Rajasthan and Gujarat dominate solar IPP deployments because they offer the irreplaceable combination of peak irradiation, vast cheap land, and the ISTS evacuation corridors that solar economics demand.</p>
+        <p class="text-blue-200 text-xs leading-relaxed">Google is front-running a future where hyperscalers become parallel utilities. The asymmetric bet: if India's power inefficiencies persist + AI demand explodes + regulatory flexibility continues → massive structural advantage. If even one breaks → capital locked in low-return, regulated assets.</p>
+      </div>
+      <div class="space-y-4">
+        <div class="p-4 rounded-xl" style="background:rgba(255,255,255,.08)">
+          <p class="text-xs font-bold text-cyan-300 uppercase mb-2">The Core Strategic Insight</p>
+          <p class="text-sm text-white leading-relaxed">Data centers follow data and connectivity, not cheap power. Solar IPPs follow irradiation and land, not demand. India's energy map and its digital infrastructure map are structurally divergent — and that divergence is not a problem to solve but a feature to arbitrage.</p>
+        </div>
+        <div class="p-4 rounded-xl" style="background:rgba(255,255,255,.08)">
+          <p class="text-xs font-bold text-cyan-300 uppercase mb-2">What Most Analysts Miss</p>
+          <p class="text-sm text-white leading-relaxed">The real competition in the AI era is not just in compute or cloud — it is in who controls the cheapest, cleanest, and most reliable electrons at scale. Google's distribution license is not regulatory arbitrage. It is the first move in building a private energy operating system for AI infrastructure.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+
+<!-- AUTHOR -->
+<footer id="author" class="bg-white border-t border-slate-200 py-16 text-center">
+  <div class="max-w-2xl mx-auto px-4">
+    <h3 class="text-xl font-black text-slate-900 mb-2">Connect with the Author</h3>
+    <p class="text-slate-500 text-sm mb-6 leading-relaxed">This analysis presents a power sector perspective on hyperscale energy strategy, regulatory structuring, and infrastructure economics, and represents the author's personal views.</p>
+    <a href="https://www.linkedin.com/in/yash-pal-859145129" target="_blank" class="inline-flex items-center gap-3 bg-[#0077B5] hover:bg-[#005582] text-white px-8 py-4 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg transition-all hover:-translate-y-1">
+      <span class="text-lg leading-none font-black">in</span>Connect on LinkedIn
+    </a>
+  </div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+  const ctx = document.getElementById('opexChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Year 1','Year 3','Year 5','Year 7','Year 10'],
+      datasets: [
+        {label:'Standard DISCOM/OA Route (₹ Cr cumulative)',data:[900,2700,4500,6300,9000],backgroundColor:'#94A3B8',borderRadius:6},
+        {label:'Distribution License Model (₹ Cr cumulative)',data:[500,1500,2500,3500,5000],backgroundColor:'#2563EB',borderRadius:6}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'top',labels:{font:{family:"'DM Sans',sans-serif",weight:'600',size:11},padding:16}},
+        tooltip:{callbacks:{
+          label:(c)=>' '+c.dataset.label+': ₹'+c.raw.toLocaleString()+' Cr'
+        }}
+      },
+      scales:{
+        y:{beginAtZero:true,title:{display:true,text:'Cumulative OPEX Cost (₹ Crores)',font:{weight:'bold',size:11}},grid:{color:'#F1F5F9'}},
+        x:{grid:{display:false}}
+      }
+    }
+  });
+});
+</script>
+</body>
+</html>
