@@ -204,72 +204,140 @@ a.ref-link:hover{text-decoration:underline}
 
       // Rich HTML Tooltip Generator including Wind + Solar Breakdown
       function createTooltip(stateName, solarGW, windGW, totalGW, dcGW) {
-        return `
-          <div style="padding: 16px; background: rgba(15,23,42,0.95); backdrop-filter: blur(8px); color: #F8FAFC; border-radius: 12px; font-family: 'DM Sans', sans-serif; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 280px; border: 1px solid rgba(255,255,255,0.1);">
-             <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #334155; padding-bottom: 8px;">${stateName}</h3>
-             
-             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                 <span style="color: #94A3B8; font-size: 11px; font-weight: 700;">Solar Potential:</span>
-                 <span style="font-weight: 700; font-size: 13px; color: #fbbf24;">${solarGW} GW</span>
-             </div>
 
-             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                 <span style="color: #94A3B8; font-size: 11px; font-weight: 700;">Wind Potential (150m):</span>
-                 <span style="font-weight: 700; font-size: 13px; color: #38bdf8;">${windGW} GW</span>
-             </div>
-             
-             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px dotted #475569;">
-                 <span style="color: #cbd5e1; font-size: 11px; font-weight: 900; text-transform: uppercase;">Total RE Potential:</span>
-                 <span style="font-weight: 900; font-size: 14px; color: #f59e0b; background: rgba(245,158,11,0.15); padding: 2px 6px; border-radius: 4px;">${totalGW} GW</span>
-             </div>
+  // ===== ANDHRA PRADESH (SHOW AP + TELANGANA) =====
+  if (stateName === 'Andhra Pradesh') {
+    return `
+    <div style="font-family:'DM Sans', sans-serif;">
+      <div style="display:flex; gap:10px;">
+        
+        <div style="padding:12px;background:rgba(15,23,42,0.95);color:#fff;border-radius:10px;width:200px;">
+          <b>Andhra Pradesh</b><br>
+          Solar: <span style="color:#fbbf24;">223.28</span> GW<br>
+          Wind: <span style="color:#38bdf8;">123.34</span> GW<br>
+          <b>Total: 346.62 GW</b><br>
+          DC: 1.25 GW
+        </div>
 
-             <div style="display: flex; justify-content: space-between; align-items: center;">
-                 <span style="color: #cbd5e1; font-size: 11px; font-weight: 900; text-transform: uppercase;">DC Load (IT):</span>
-                 <span style="font-weight: 900; font-size: 14px; color: #0ea5e9; background: rgba(14,165,233,0.15); padding: 2px 6px; border-radius: 4px;">${dcGW}</span>
-             </div>
-          </div>
-        `;
-      }
+        <div style="padding:12px;background:rgba(15,23,42,0.95);color:#fff;border-radius:10px;width:200px;">
+          <b>Telangana</b><br>
+          Solar: <span style="color:#fbbf24;">140.45</span> GW<br>
+          Wind: <span style="color:#38bdf8;">54.72</span> GW<br>
+          <b>Total: 195.17 GW</b><br>
+          DC: 0.40 GW
+        </div>
+
+      </div>
+
+      <div style="margin-top:6px;font-size:10px;color:#94A3B8;">
+        *Map limitation: Telangana is not rendered separately.
+      </div>
+    </div>
+    `;
+  }
+
+  // ===== J&K (SHOW J&K + LADAKH) =====
+  if (stateName === 'Jammu & Kashmir') {
+    return `
+    <div style="font-family:'DM Sans', sans-serif;">
+      <div style="display:flex; gap:10px;">
+        
+        <div style="padding:12px;background:rgba(15,23,42,0.95);color:#fff;border-radius:10px;width:200px;">
+          <b>Jammu & Kashmir</b><br>
+          Solar: 8.59 GW<br>
+          Wind: 0 GW<br>
+          <b>Total: 8.59 GW</b><br>
+          DC: Minimal
+        </div>
+
+        <div style="padding:12px;background:rgba(15,23,42,0.95);color:#fff;border-radius:10px;width:200px;">
+          <b>Ladakh</b><br>
+          Solar: 8.56 GW<br>
+          Wind: 0.001 GW<br>
+          <b>Total: 8.56 GW</b><br>
+          DC: Minimal
+        </div>
+
+      </div>
+
+      <div style="margin-top:6px;font-size:10px;color:#94A3B8;">
+        *Map limitation: Ladakh is not shown separately. Entire northern region is represented together.
+      </div>
+    </div>
+    `;
+  }
+
+  // ===== DEFAULT (UNCHANGED) =====
+  return `
+    <div style="padding: 16px; background: rgba(15,23,42,0.95); backdrop-filter: blur(8px); color: #F8FAFC; border-radius: 12px; font-family: 'DM Sans', sans-serif; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 280px; border: 1px solid rgba(255,255,255,0.1);">
+       <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #334155; padding-bottom: 8px;">${stateName}</h3>
+       
+       <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+           <span style="color: #94A3B8;">Solar:</span>
+           <span style="color:#fbbf24;">${solarGW} GW</span>
+       </div>
+
+       <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+           <span style="color: #94A3B8;">Wind:</span>
+           <span style="color:#38bdf8;">${windGW} GW</span>
+       </div>
+       
+       <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+           <span>Total:</span>
+           <span style="color:#f59e0b;">${totalGW} GW</span>
+       </div>
+
+       <div style="display: flex; justify-content: space-between;">
+           <span>DC Load:</span>
+           <span style="color:#0ea5e9;">${dcGW}</span>
+       </div>
+    </div>
+  `;
+}
 
       // FULL INDIA DATASET (Solar + Wind Totals)
       data.addRows([
-        // Extreme / High Tier (>300 GW)
-        [{v: 'IN-RJ', f: 'Rajasthan'}, 1113.03, createTooltip('Rajasthan', 828.78, 284.25, 1113.03, '< 0.05 GW')],
-        [{v: 'IN-MH', f: 'Maharashtra'}, 660.55, createTooltip('Maharashtra', 486.68, 173.87, 660.55, '1.80 GW')],
-        [{v: 'IN-KA', f: 'Karnataka'}, 468.56, createTooltip('Karnataka', 299.31, 169.25, 468.56, '0.30 GW')],
-        [{v: 'IN-GJ', f: 'Gujarat'}, 424.01, createTooltip('Gujarat', 243.22, 180.79, 424.01, '0.12 GW')],
-        [{v: 'IN-MP', f: 'Madhya Pradesh'}, 374.39, createTooltip('Madhya Pradesh', 318.97, 55.42, 374.39, '0.01 GW')],
-        [{v: 'IN-AP', f: 'Andhra Pradesh'}, 346.62, createTooltip('Andhra Pradesh', 223.28, 123.34, 346.62, '1.25 GW')],
-        [{v: 'IN-TN', f: 'Tamil Nadu'}, 299.88, createTooltip('Tamil Nadu', 204.77, 95.11, 299.88, '0.50 GW')],
-        
-        // Mid Tier (100 - 200 GW)
-        [{v: 'IN-TG', f: 'Telangana'}, 195.17, createTooltip('Telangana', 140.45, 54.72, 195.17, '0.40 GW')],
-        [{v: 'IN-OR', f: 'Odisha'}, 151.60, createTooltip('Odisha', 139.47, 12.13, 151.60, 'Minimal')],
-        [{v: 'IN-CT', f: 'Chhattisgarh'}, 129.23, createTooltip('Chhattisgarh', 126.48, 2.75, 129.23, 'Minimal')],
-        
-        // Lower Tier (< 100 GW)
-        [{v: 'IN-UP', f: 'Uttar Pradesh'}, 98.35, createTooltip('Uttar Pradesh', 97.84, 0.51, 98.35, '0.15 GW')],
-        [{v: 'IN-JH', f: 'Jharkhand'}, 51.85, createTooltip('Jharkhand', 51.83, 0.02, 51.85, 'Minimal')],
-        [{v: 'IN-BR', f: 'Bihar'}, 37.01, createTooltip('Bihar', 32.99, 4.02, 37.01, 'Minimal')],
-        [{v: 'IN-WB', f: 'West Bengal'}, 24.02, createTooltip('West Bengal', 22.74, 1.28, 24.02, '0.02 GW')],
-        [{v: 'IN-HP', f: 'Himachal Pradesh'}, 21.74, createTooltip('Himachal Pradesh', 21.50, 0.24, 21.74, 'Minimal')],
-        [{v: 'IN-AS', f: 'Assam'}, 19.63, createTooltip('Assam', 19.17, 0.46, 19.63, 'Minimal')],
-        [{v: 'IN-JK', f: 'Jammu & Kashmir'}, 17.15, createTooltip('Jammu & Kashmir', 17.15, 0.00, 17.15, 'Minimal')], 
-        [{v: 'IN-ML', f: 'Meghalaya'}, 14.73, createTooltip('Meghalaya', 14.67, 0.06, 14.73, 'Minimal')],
-        [{v: 'IN-KL', f: 'Kerala'}, 15.02, createTooltip('Kerala', 12.40, 2.62, 15.02, 'Minimal')],
-        [{v: 'IN-PB', f: 'Punjab'}, 9.64, createTooltip('Punjab', 9.21, 0.43, 9.64, 'Minimal')],
-        [{v: 'IN-TR', f: 'Tripura'}, 9.11, createTooltip('Tripura', 9.11, 0.00, 9.11, 'Minimal')],
-        [{v: 'IN-HR', f: 'Haryana'}, 7.06, createTooltip('Haryana', 6.47, 0.59, 7.06, 'Minimal')],
-        [{v: 'IN-GA', f: 'Goa'}, 6.76, createTooltip('Goa', 6.75, 0.01, 6.76, 'Minimal')],
-        [{v: 'IN-UT', f: 'Uttarakhand'}, 4.49, createTooltip('Uttarakhand', 4.44, 0.05, 4.49, 'Minimal')],
-        [{v: 'IN-MN', f: 'Manipur'}, 2.29, createTooltip('Manipur', 2.29, 0.00, 2.29, 'Minimal')],
-        [{v: 'IN-MZ', f: 'Mizoram'}, 0.61, createTooltip('Mizoram', 0.61, 0.00, 0.61, 'Minimal')],
-        [{v: 'IN-DL', f: 'Delhi'}, 0.55, createTooltip('Delhi', 0.55, 0.00, 0.55, '0.15 GW')],
-        [{v: 'IN-AR', f: 'Arunachal Pradesh'}, 0.72, createTooltip('Arunachal Pradesh', 0.47, 0.25, 0.72, 'Minimal')],
-        [{v: 'IN-NL', f: 'Nagaland'}, 0.19, createTooltip('Nagaland', 0.19, 0.00, 0.19, 'Minimal')],
-        [{v: 'IN-SK', f: 'Sikkim'}, 0.25, createTooltip('Sikkim', 0.25, 0.00, 0.25, 'Minimal')]
-      ]);
 
+  // ===== STATES =====
+  [{v:'IN-AP',f:'Andhra Pradesh'},346.62,createTooltip('Andhra Pradesh',223.28,123.336,346.62,'1.25 GW')],
+  [{v:'IN-AR',f:'Arunachal Pradesh'},0.72,createTooltip('Arunachal Pradesh',0.47,0.246,0.72,'Minimal')],
+  [{v:'IN-AS',f:'Assam'},19.63,createTooltip('Assam',19.17,0.459,19.63,'Minimal')],
+  [{v:'IN-BR',f:'Bihar'},37.01,createTooltip('Bihar',32.99,4.023,37.01,'Minimal')],
+  [{v:'IN-CT',f:'Chhattisgarh'},129.23,createTooltip('Chhattisgarh',126.48,2.749,129.23,'Minimal')],
+  [{v:'IN-GA',f:'Goa'},6.76,createTooltip('Goa',6.75,0.014,6.76,'Minimal')],
+  [{v:'IN-GJ',f:'Gujarat'},424.01,createTooltip('Gujarat',243.22,180.79,424.01,'0.12 GW')],
+  [{v:'IN-HR',f:'Haryana'},7.06,createTooltip('Haryana',6.47,0.593,7.06,'Minimal')],
+  [{v:'IN-HP',f:'Himachal Pradesh'},21.74,createTooltip('Himachal Pradesh',21.5,0.239,21.74,'Minimal')],
+  [{v:'IN-JH',f:'Jharkhand'},51.85,createTooltip('Jharkhand',51.83,0.016,51.85,'Minimal')],
+  [{v:'IN-KA',f:'Karnataka'},468.56,createTooltip('Karnataka',299.31,169.251,468.56,'0.30 GW')],
+  [{v:'IN-KL',f:'Kerala'},15.02,createTooltip('Kerala',12.4,2.621,15.02,'Minimal')],
+  [{v:'IN-MP',f:'Madhya Pradesh'},374.39,createTooltip('Madhya Pradesh',318.97,55.423,374.39,'0.01 GW')],
+  [{v:'IN-MH',f:'Maharashtra'},660.55,createTooltip('Maharashtra',486.68,173.868,660.55,'1.80 GW')],
+  [{v:'IN-MN',f:'Manipur'},2.29,createTooltip('Manipur',2.29,0,2.29,'Minimal')],
+  [{v:'IN-ML',f:'Meghalaya'},14.73,createTooltip('Meghalaya',14.67,0.055,14.73,'Minimal')],
+  [{v:'IN-MZ',f:'Mizoram'},0.61,createTooltip('Mizoram',0.61,0,0.61,'Minimal')],
+  [{v:'IN-NL',f:'Nagaland'},0.19,createTooltip('Nagaland',0.19,0,0.19,'Minimal')],
+  [{v:'IN-OR',f:'Odisha'},151.60,createTooltip('Odisha',139.47,12.129,151.60,'Minimal')],
+  [{v:'IN-PB',f:'Punjab'},9.64,createTooltip('Punjab',9.21,0.428,9.64,'Minimal')],
+  [{v:'IN-RJ',f:'Rajasthan'},1113.03,createTooltip('Rajasthan',828.78,284.25,1113.03,'<0.05 GW')],
+  [{v:'IN-SK',f:'Sikkim'},0.25,createTooltip('Sikkim',0.25,0,0.25,'Minimal')],
+  [{v:'IN-TN',f:'Tamil Nadu'},299.88,createTooltip('Tamil Nadu',204.77,95.107,299.88,'0.50 GW')],
+  [{v:'IN-TR',f:'Tripura'},9.11,createTooltip('Tripura',9.11,0,9.11,'Minimal')],
+  [{v:'IN-UP',f:'Uttar Pradesh'},98.35,createTooltip('Uttar Pradesh',97.84,0.51,98.35,'0.15 GW')],
+  [{v:'IN-UT',f:'Uttarakhand'},4.49,createTooltip('Uttarakhand',4.44,0.049,4.49,'Minimal')],
+  [{v:'IN-WB',f:'West Bengal'},24.02,createTooltip('West Bengal',22.74,1.281,24.02,'0.02 GW')],
+
+  // ===== UNION TERRITORIES =====
+  [{v:'IN-AN',f:'Andaman and Nicobar Islands'},1.835,createTooltip('Andaman & Nicobar',0.59,1.245,1.835,'Minimal')],
+  [{v:'IN-CH',f:'Chandigarh'},0.02,createTooltip('Chandigarh',0.02,0,0.02,'Minimal')],
+  [{v:'IN-DN',f:'Dadra and Nagar Haveli and Daman and Diu'},0.517,createTooltip('DNH & Diu',0.5,0.017,0.517,'Minimal')],
+  [{v:'IN-DL',f:'Delhi'},0.55,createTooltip('Delhi',0.55,0,0.55,'0.15 GW')],
+  [{v:'IN-JK',f:'Jammu and Kashmir'},8.59,createTooltip('Jammu & Kashmir',8.59,0,8.59,'Minimal')],
+  [{v:'IN-LA',f:'Ladakh'},8.561,createTooltip('Ladakh',8.56,0.001,8.561,'Minimal')],
+  [{v:'IN-LD',f:'Lakshadweep'},0.031,createTooltip('Lakshadweep',0,0.031,0.031,'Minimal')],
+  [{v:'IN-PY',f:'Puducherry'},0.608,createTooltip('Puducherry',0.2,0.408,0.608,'Minimal')]
+
+]);
       var options = {
         region: 'IN', // Focus map on India
         domain: 'IN',
